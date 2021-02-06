@@ -52,13 +52,11 @@ public class PlaylistService {
     }
 
     public Playlist deleteSongFromPlaylist(Playlist reqPlaylist, String songName){
-        System.out.println("Size in begining : " + reqPlaylist.getSongs().size());
         for (Song song : reqPlaylist.getSongs()){
             if(song.getName().equalsIgnoreCase(songName)){
                 reqPlaylist.getSongs().remove(song);
             }
         }
-        System.out.println("Size in end : " + reqPlaylist.getSongs().size());
         return playlistRepository.save(reqPlaylist);
     }
 }

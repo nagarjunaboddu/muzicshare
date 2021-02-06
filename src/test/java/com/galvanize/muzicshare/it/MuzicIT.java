@@ -83,6 +83,7 @@ public class MuzicIT {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMsg").value("Name is required"));
     }
+
     @Test
     void postNewPlaylist_error_NoName_blank() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
@@ -119,15 +120,6 @@ public class MuzicIT {
     }
 
 
-    @Test
-    void validateAddSongsForNewPlaylist_error_NoSongFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add/song/Stop")
-                .content(getPlaylistRequestAsString("Melody")).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.responseText").value("No Such Song Found"))
-                .andExpect(jsonPath("$.responseBody.songs", hasSize(2)));
-    }
-
     /*
         Given a playlist with 2 songs
         When a song is removed
@@ -151,6 +143,23 @@ public class MuzicIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/remove/song/Heart")
                 .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.songs", hasSize(1)));
+    }
+
+    /*
+    Given a song doesn't exist
+    And a playlist with 1 song
+    When the song is added to the playlist
+    Then the playlist still has 1 song
+    And a message is returned that the song doesn't exist.
+     */
+    @Test
+    void validateAddSongsForNewPlaylist_error_NoSongFound() throws Exception {
+        //Melody Playlist created with data.sql with 2 existing songs
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add/song/Stop")
+                .content(getPlaylistRequestAsString("Melody")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.responseText").value("No Such Song Found"))
+                .andExpect(jsonPath("$.responseBody.songs", hasSize(2)));
     }
 
     //Utility Method to get Request playlist as a String
