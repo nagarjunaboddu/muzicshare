@@ -26,4 +26,6 @@ public class Playlist {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @Singular //to return empty list when null
     private List<Song> songs;
+
+
 }
