@@ -27,22 +27,38 @@ public class PlaylistService {
             System.out.println("Name is Blank or empty");
             throw new PlaylistException("Name is required","PLAYLIST_NAME_ERROR");
         }
-        Playlist response = playlistRepository.save(reqPlaylist);
-        return response;
+        return playlistRepository.save(reqPlaylist);
     }
 
-    public Playlist updatePlaylist(Playlist reqPlaylist, String songName) throws PlaylistException {
+    public Playlist findPlayList(Playlist reqPlaylist) throws PlaylistException{
         Optional<Playlist> playlistOpt = playlistRepository.findByName(reqPlaylist.getName());
         if (playlistOpt.isEmpty()) {
             throw new PlaylistException("No Such Playlist Found","PLAYLIST_NON_EXISTENCE_ERROR");
         }
+        return playlistOpt.get();
+    }
+
+    public Song findSong(String songName) throws PlaylistException {
         Optional<Song> songOpt = songRepository.findByName(songName);
         if (songOpt.isEmpty()) {
             throw new PlaylistException("No Such Song Found","SONG_NON_EXISTENCE_ERROR");
         }
-        Playlist pl = playlistOpt.get();
-        pl.getSongs().add(songOpt.get());
-        Playlist response = playlistRepository.save(pl);
+        return songOpt.get();
+    }
+    public Playlist addSongToPlaylist(Playlist reqPlaylist, Song song){
+        reqPlaylist.getSongs().add(song);
+        Playlist response = playlistRepository.save(reqPlaylist);
         return response;
+    }
+
+    public Playlist deleteSongFromPlaylist(Playlist reqPlaylist, String songName){
+        System.out.println("Size in begining : " + reqPlaylist.getSongs().size());
+        for (Song song : reqPlaylist.getSongs()){
+            if(song.getName().equalsIgnoreCase(songName)){
+                reqPlaylist.getSongs().remove(song);
+            }
+        }
+        System.out.println("Size in end : " + reqPlaylist.getSongs().size());
+        return playlistRepository.save(reqPlaylist);
     }
 }
