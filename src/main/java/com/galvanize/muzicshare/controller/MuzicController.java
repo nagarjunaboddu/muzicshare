@@ -27,4 +27,13 @@ public class MuzicController {
         return new ResponseEntity<PlaylistResponse>( resp, HttpStatus.CREATED);
     }
 
+    @PostMapping("/playlist/add/song/{songName}")
+    public ResponseEntity<PlaylistResponse> addSongToPlaylist(@RequestBody Playlist reqPlaylist, @PathVariable String songName) throws PlaylistException {
+        PlaylistResponse resp = new PlaylistResponse();
+        Playlist playlist = playlistService.updatePlaylist(reqPlaylist, songName);
+        resp.setResponseText("Playlist Successfully Updated");
+        resp.setResponseBody(playlist);
+        return new ResponseEntity<PlaylistResponse>( resp, HttpStatus.OK);
+    }
+
 }

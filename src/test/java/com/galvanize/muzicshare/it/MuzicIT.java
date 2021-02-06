@@ -59,12 +59,12 @@ public class MuzicIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
                 .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.name").value(playlistName))
-                .andExpect(jsonPath("$.responseBody.id").value(3));
+                .andExpect(jsonPath("$.responseBody.id").value(4));
         playlistName = "MyGroovy";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
                 .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.name").value(playlistName))
-                .andExpect(jsonPath("$.responseBody.id").value(4));
+                .andExpect(jsonPath("$.responseBody.id").value(5));
     }
 
     /*
@@ -95,10 +95,43 @@ public class MuzicIT {
     }
 
 
+    /*
+    Given an empty playlist
+    When an song is added
+    Then the playlist has 1 song
+     */
+
+    @Test
+    void validateAddSongsForNewPlaylist_error_NoPlaylistFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add/song/Heart")
+                .content(getPlaylistRequestAsString("dummy")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorMsg").value("No Such Playlist Found"));
+    }
 
 
+    @Test
+    void validateAddSongsForNewPlaylist() throws Exception {
+        String playlistName = "SadSongs";
+        //Add a new Playlist with no songs
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
+                .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add/song/Heart")
+                .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.responseBody.songs", hasSize(1)));
+    }
 
 
+    @Test
+    void validateAddSongsForNewPlaylist_error_NoSongFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add/song/Stop")
+                .content(getPlaylistRequestAsString("Melody")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorMsg").value("No Such Song Found"));
+    }
+
+
+    //Utility Method to get Request playlist as a String
     private String getPlaylistRequestAsString(String playlistName) throws JsonProcessingException {
         Playlist request = Playlist.builder().name(playlistName).build();
         String requestString = mapper.writeValueAsString(request);

@@ -21,6 +21,13 @@ public class Song {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+
     @ManyToOne(fetch= FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name="playlist_id",nullable = false)

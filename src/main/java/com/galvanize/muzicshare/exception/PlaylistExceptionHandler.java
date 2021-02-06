@@ -12,7 +12,13 @@ public class PlaylistExceptionHandler {
     @ExceptionHandler(PlaylistException.class)
     public ResponseEntity<PlaylistExceptionModel> handleTriviaException(PlaylistException playlistException){
         PlaylistExceptionModel playlistExceptionModel = new PlaylistExceptionModel(playlistException.getMessage());
-        System.out.println("Subhrajit : "  + playlistExceptionModel.getErrorMsg());
-        return new ResponseEntity<PlaylistExceptionModel>( playlistExceptionModel, HttpStatus.BAD_REQUEST);
+        HttpStatus status = null;
+        if("PLAYLIST_NAME_ERROR".equalsIgnoreCase(playlistException.getErrorType())){
+            status = HttpStatus.BAD_REQUEST;
+        }else if("PLAYLIST_NON_EXISTENCE_ERROR".equalsIgnoreCase(playlistException.getErrorType())
+                || "SONG_NON_EXISTENCE_ERROR".equalsIgnoreCase(playlistException.getErrorType())){
+            status = HttpStatus.NOT_FOUND;
+        }
+        return new ResponseEntity<PlaylistExceptionModel>( playlistExceptionModel, status);
     }
 }

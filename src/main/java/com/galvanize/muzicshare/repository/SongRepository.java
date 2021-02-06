@@ -1,6 +1,6 @@
 package com.galvanize.muzicshare.repository;
 
-import com.galvanize.muzicshare.entity.Playlist;
+import com.galvanize.muzicshare.entity.Song;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
+public interface SongRepository extends JpaRepository<Song, Long> {
 
-    @Query("SELECT p FROM Playlist p where p.name = ?1")
-    Optional<Playlist> findByName(String name);
+    @Query("SELECT s FROM Song s where s.name = ?1")
+    Optional<Song> findByName(String name);
 }
