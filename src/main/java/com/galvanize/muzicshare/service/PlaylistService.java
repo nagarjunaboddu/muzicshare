@@ -47,16 +47,11 @@ public class PlaylistService {
     }
     public Playlist addSongToPlaylist(Playlist reqPlaylist, Song song){
         reqPlaylist.getSongs().add(song);
-        Playlist response = playlistRepository.save(reqPlaylist);
-        return response;
+        return playlistRepository.save(reqPlaylist);
     }
 
     public Playlist deleteSongFromPlaylist(Playlist reqPlaylist, String songName){
-        for (Song song : reqPlaylist.getSongs()){
-            if(song.getName().equalsIgnoreCase(songName)){
-                reqPlaylist.getSongs().remove(song);
-            }
-        }
+        reqPlaylist.getSongs().removeIf(song -> song.getName().equalsIgnoreCase(songName));
         return playlistRepository.save(reqPlaylist);
     }
 }

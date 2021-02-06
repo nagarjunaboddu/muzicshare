@@ -36,7 +36,6 @@ public class MuzicController {
         try {
             Song song = playlistService.findSong(songName);
             playlistReq = playlistService.addSongToPlaylist(playlistReq, song);
-
         } catch (PlaylistException e) {
             error = true;
         }

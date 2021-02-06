@@ -165,7 +165,6 @@ public class MuzicIT {
     //Utility Method to get Request playlist as a String
     private String getPlaylistRequestAsString(String playlistName) throws JsonProcessingException {
         Playlist request = Playlist.builder().name(playlistName).build();
-        String requestString = mapper.writeValueAsString(request);
-        return requestString;
+       return mapper.writeValueAsString(request);
     }
 }
