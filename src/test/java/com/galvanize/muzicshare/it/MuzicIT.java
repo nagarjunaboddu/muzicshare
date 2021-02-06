@@ -21,11 +21,18 @@ public class MuzicIT {
     @Autowired
     private MockMvc mockMvc;
 
+    /*
+    When a playlist is created with a name
+    Then a confirmation is returned that it was successful.
+    And the playlist is empty.
+     */
+
     @Test
-    void postNewPlaylist_returnsOk() throws Exception {
+    void postNewPlaylist_returnsCreated() throws Exception {
         String playlistName = "MyFunky";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
                 .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.responseText").value("Playlist Successfully Added"));;
     }
 }
