@@ -1,5 +1,6 @@
 package com.galvanize.muzicshare.it;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.muzicshare.entity.Playlist;
 import com.galvanize.muzicshare.repository.PlaylistRepository;
@@ -27,6 +28,9 @@ public class MuzicIT {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    ObjectMapper mapper;
+
     /*
     When a playlist is created with a name
     Then a confirmation is returned that it was successful.
@@ -35,18 +39,17 @@ public class MuzicIT {
 
     @Test
     void postNewPlaylist_returnsCreated() throws Exception {
-        String playlistName = "MyFunky";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
-                .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
+                .content(getPlaylistRequestAsString("MyFunky")).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.responseText").value("Playlist Successfully Added"));
     }
 
     @Test
     void postNewPlaylist_validateEmptySongsForNewPlaylist() throws Exception {
-        String playlistName = "MyFunky";
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
-                .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
+                .content(getPlaylistRequestAsString("MyFunky")).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.songs", hasSize(0)));
     }
 
@@ -54,13 +57,51 @@ public class MuzicIT {
     void postNewPlaylist_validateAddingMultiplePlaylist() throws Exception {
         String playlistName = "MyFunky";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
-                .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
+                .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.name").value(playlistName))
-                .andExpect(jsonPath("$.responseBody.id").value(1));
+                .andExpect(jsonPath("$.responseBody.id").value(3));
         playlistName = "MyGroovy";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
-                .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
+                .content(getPlaylistRequestAsString(playlistName)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.responseBody.name").value(playlistName))
-                .andExpect(jsonPath("$.responseBody.id").value(2));
+                .andExpect(jsonPath("$.responseBody.id").value(4));
+    }
+
+    /*
+    When a playlist is created without a name
+    Then a message is returned that a name is required.
+     */
+    @Test
+    void postNewPlaylist_error_NoName_Null() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
+                .content(getPlaylistRequestAsString(null)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMsg").value("Name is required"));
+    }
+
+    @Test
+    void postNewPlaylist_error_NoName_empty() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
+                .content(getPlaylistRequestAsString("")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMsg").value("Name is required"));
+    }
+    @Test
+    void postNewPlaylist_error_NoName_blank() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
+                .content(getPlaylistRequestAsString("      ")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMsg").value("Name is required"));
+    }
+
+
+
+
+
+
+    private String getPlaylistRequestAsString(String playlistName) throws JsonProcessingException {
+        Playlist request = Playlist.builder().name(playlistName).build();
+        String requestString = mapper.writeValueAsString(request);
+        return requestString;
     }
 }
