@@ -35,4 +35,12 @@ public class MuzicIT {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.responseText").value("Playlist Successfully Added"));;
     }
+
+    @Test
+    void postNewPlaylist_validateEmptySongsForNewPlaylist() throws Exception {
+        String playlistName = "MyFunky";
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/playlist/add")
+                .content(playlistName).contentType(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(jsonPath("$.responseBody.songs", hasSize(0)));;
+    }
 }

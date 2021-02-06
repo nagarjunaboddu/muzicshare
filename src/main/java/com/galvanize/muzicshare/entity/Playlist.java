@@ -1,11 +1,10 @@
 package com.galvanize.muzicshare.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +21,9 @@ public class Playlist {
 
     @Column(name = "name")
     private String name;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @Singular //to return empty list when null
+    private List<Song> songs;
 }

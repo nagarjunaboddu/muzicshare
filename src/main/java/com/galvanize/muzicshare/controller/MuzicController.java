@@ -22,6 +22,7 @@ public class MuzicController {
         PlaylistResponse resp = new PlaylistResponse();
         Playlist playlist = playlistService.addNewPlaylist(name);
         resp.setResponseText("Playlist Successfully Added");
+        resp.setResponseBody(playlist);
         return new ResponseEntity<PlaylistResponse>( resp, HttpStatus.CREATED);
     }
 
